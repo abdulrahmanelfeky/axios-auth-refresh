@@ -49,18 +49,15 @@ export default function createAuthRefreshInterceptor(
             options = mergeOptions(defaultOptions, options);
 
             if (!shouldInterceptError(error, options, instance, cache)) {
-                return Promise.reject(error);
+                return Promise.reject(
+                    (error.response && error.response.data) || 'Something went wrong'
+                );       
+            
             }
 
             if (options.pauseInstanceWhileRefreshing) {
                 cache.skipInstances.push(instance);
             }
-            if (error.response.status != 401) {
-                return Promise.reject(
-                    (error.response && error.response.data) || 'Something went wrong'
-                );
-            }
-
 
 
             // If refresh call does not exist, create one

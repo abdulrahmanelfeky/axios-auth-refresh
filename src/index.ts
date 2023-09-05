@@ -55,6 +55,13 @@ export default function createAuthRefreshInterceptor(
             if (options.pauseInstanceWhileRefreshing) {
                 cache.skipInstances.push(instance);
             }
+            if (error.response.status != 401) {
+                return Promise.reject(
+                    (error.response && error.response.data) || 'Something went wrong'
+                );
+            }
+
+
 
             // If refresh call does not exist, create one
             const refreshing = createRefreshCall(error, refreshAuthCall, cache);

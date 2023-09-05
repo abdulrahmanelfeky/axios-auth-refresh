@@ -1,7 +1,7 @@
-import axios, { AxiosInstance, AxiosPromise, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosPromise, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import { AxiosAuthRefreshOptions, AxiosAuthRefreshCache } from './model';
 
-export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
     skipAuthRefresh?: boolean;
 }
 
@@ -97,12 +97,12 @@ export function createRequestQueueInterceptor(
     options: AxiosAuthRefreshOptions
 ): number {
     if (typeof cache.requestQueueInterceptorId === 'undefined') {
-        cache.requestQueueInterceptorId = instance.interceptors.request.use((request: CustomAxiosRequestConfig) => {
+        cache.requestQueueInterceptorId = instance.interceptors.request.use((request: InternalAxiosRequestConfig) => {
             return cache.refreshCall
                 .catch(() => {
                     throw new axios.Cancel('Request call failed');
                 })
-                .then(() => (options.onRetry ? options.onRetry(request) : request));
+                .then(() => (options.onRetry ? options.onRetry(request) : request)) as any;
         });
     }
     return cache.requestQueueInterceptorId;
